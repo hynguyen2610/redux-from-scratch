@@ -1,0 +1,57 @@
+<html>
+<div>
+    Counter:
+    <span id='counter'></span>
+</div>
+
+<button id="inc">Increment</button>
+<button id="dec">Decrement</button>
+<script type="text/javascript">
+    let state = {
+        counter: 3
+    };
+
+    const listeners = [];
+
+    function dispatch(action) {
+        const newState = reducer(state, action);
+        console.log("All Listeners: ", listeners);
+        if (newState !== state) {
+            state = newState;
+            listeners.forEach(listener => {
+                console.log("Listener: ", listener);
+                listener();
+            });
+        }
+        else {
+            console.log("Keep old state due to same matching");
+        }
+    }
+
+    document.querySelector("#inc").onclick = () => dispatch('INC');
+    document.querySelector("#dec").onclick = () => dispatch('DEC');
+
+    function updateView() {
+        document.querySelector('#counter').innerText = state.counter;
+    }
+
+    function subscribe(callback) {
+        listeners.push(callback);
+    }
+
+    function reducer(state, action) {
+        console.log("Reducer, action: ", action);
+        switch(action) {
+            case 'INC':
+                console.log("Increase call");
+                return Object.assign({}, state, { counter: state.counter + 1 });
+            case 'DEC':
+                return Object.assign({}, state, { counter: state.counter - 1 });
+            default:
+                return state;        
+        }
+    }
+
+    subscribe(updateView);
+</script>
+</html>
