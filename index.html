@@ -1,4 +1,8 @@
 <html>
+
+<head>
+    <script src="https://unpkg.com/redux/dist/redux.js"></script>
+</head>
 <div>
     Counter:
     <span id='counter'></span>
@@ -7,51 +11,48 @@
 <button id="inc">Increment</button>
 <button id="dec">Decrement</button>
 <script type="text/javascript">
-    let state = {
+    const initialState = {
         counter: 3
     };
 
+    const store = Redux.createStore(reducer, initialState);
+
+    /**
+     * Array of listeners in system
+     * */
     const listeners = [];
 
-    function dispatch(action) {
-        const newState = reducer(state, action);
-        console.log("All Listeners: ", listeners);
-        if (newState !== state) {
-            state = newState;
-            listeners.forEach(listener => {
-                console.log("Listener: ", listener);
-                listener();
-            });
-        }
-        else {
-            console.log("Keep old state due to same matching");
-        }
-    }
+    document.querySelector("#inc").onclick = () => store.dispatch({ type: 'INC' });
+    document.querySelector("#dec").onclick = () => store.dispatch({ type: 'DEC' });
 
-    document.querySelector("#inc").onclick = () => dispatch('INC');
-    document.querySelector("#dec").onclick = () => dispatch('DEC');
 
+    /**
+     * The funtion to update the DOM from state value
+     * */
     function updateView() {
-        document.querySelector('#counter').innerText = state.counter;
+        document.querySelector('#counter').innerText = store.getState().counter;
     }
 
-    function subscribe(callback) {
-        listeners.push(callback);
-    }
+    /*
+    * Use the store to subscribe to the update funtion
+    **/
+    store.subscribe(updateView);
 
+    /**
+     * The funtion the receive the current state as input, pass it though  one action and return a newstate
+     * */
     function reducer(state, action) {
         console.log("Reducer, action: ", action);
-        switch(action) {
+        switch (action.type) {
             case 'INC':
                 console.log("Increase call");
                 return Object.assign({}, state, { counter: state.counter + 1 });
             case 'DEC':
                 return Object.assign({}, state, { counter: state.counter - 1 });
             default:
-                return state;        
+                return state;
         }
     }
-
-    subscribe(updateView);
 </script>
+
 </html>

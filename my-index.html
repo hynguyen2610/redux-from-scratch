@@ -1,0 +1,47 @@
+<html>
+    <body>
+        <h1 id="counter"></h1>
+        <p>Click the buttons to change the number</p>
+        <button id="btnIncrease">Increase</button>
+        <button id="btnDecrease">Decrease</button>
+    </body>
+    <script>
+        var state = { counter: 3 };
+
+        function updateView() {
+            document.getElementById("counter").innerText = state.counter;
+        }
+
+        let listeners = [];
+
+        function dispatch(action) {
+            const newState = reducer(state, action);
+            if (newState !== state) {
+                state = newState;
+                listeners.forEach(listener => listener());
+            }
+        }
+
+        document.getElementById("btnIncrease").onclick = () => dispatch('INCREASE');
+        document.getElementById("btnDecrease").onclick = () => dispatch('DECREASE');
+
+        function subscribe(callback) {
+            listeners.push(callback);
+        }
+
+        function reducer(currentState, action) {
+            console.log("REDUCER called, current state: ", currentState);
+            switch(action) {
+                case 'INCREASE':
+                    return { counter: currentState.counter + 1 };
+                case 'DECREASE':
+                    return { counter: currentState.counter - 1 };
+                default:
+                    return state;        
+            }
+        }
+
+        subscribe(updateView);
+
+    </script>
+</html>
